@@ -20,7 +20,7 @@ Also developers can create pull requests on our [BitBucket repo](https://bitbuck
 Ensure you have WooCommerce plugin installed and activated.
 
 1. Download the plugin file to your computer and unzip it
-2. Using FTP software, or your hosting control panel, upload the unzipped plugin folder to your WordPress installationâ€™s wp-content/plugins/ directory.
+2. Using FTP software, or your hosting control panel, upload the unzipped plugin folder to your WordPress installation’s wp-content/plugins/ directory.
 3. Activate the plugin from the Plugins menu within the WordPress admin.
 
 == Screenshots ==
@@ -28,5 +28,8 @@ Ensure you have WooCommerce plugin installed and activated.
 2. Notice reminding the customer to choose the default address.
 
 == Changelog ==
+= 1.0.1 =
+* Bug fix (fatal error on activation)
+
 = 1.0 =
 * Initial release.

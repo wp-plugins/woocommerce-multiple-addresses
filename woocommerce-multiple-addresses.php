@@ -12,7 +12,7 @@
  * Plugin Name: Woocommerce Multiple Addresses
  * Plugin URI:  http://n3wnormal.com
  * Description: The plugin allows customers have more than one shipping addresses. Customers can switch one to another on checkout or setup a default one in My Account.
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Alexander Tinyaev
  * Author URI:  http://n3wnormal.com
  * License:     GPL-2.0+

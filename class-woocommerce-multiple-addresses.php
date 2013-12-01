@@ -71,12 +71,9 @@ class WC_Multiple_addresses {
 	/**
 	 * Initialize the plugin by setting filters and administration functions.
 	 *
-	 * @since     1.0.0
+	 * @since     1.0.1
 	 */
 	private function __construct() {
-
-		// Load plugin text domain
-		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
 
 		// Load public-facing style sheet.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
