@@ -20,11 +20,11 @@ class WC_Multiple_addresses {
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 *
 	 * @var     string
 	 */
-	protected $version = '1.0.2';
+	protected $version = '1.0.3';
 
 	/**
 	 * Unique identifier for the plugin.
@@ -175,11 +175,11 @@ class WC_Multiple_addresses {
 	/**
 	 * Multiple shipping addresses page
 	 *
-	 * @since    1.0.2
+	 * @since    1.0.3
 	 */
 	public function multiple_shipping_addresses() {
 		global $woocommerce;
-		require_once $woocommerce->plugin_path() .'/classes/class-wc-checkout.php';
+		require_once $woocommerce->plugin_path() .'/includes/class-wc-checkout.php';
 
 		$checkout   = new WC_Order();
 		$user       = wp_get_current_user();
@@ -321,16 +321,9 @@ class WC_Multiple_addresses {
 	/**
 	 * Save multiple shipping addresses
 	 *
-	 * @since    1.0.0
+	 * @since    1.0.3
 	 */
 	public function save_multiple_shipping_addresses() {
-		global $woocommerce;
-
-		require_once $woocommerce->plugin_path() .'/classes/class-wc-checkout.php';
-		$woocommerce->checkout = new WC_Checkout();
-		$checkout   = $woocommerce->checkout;
-		//$fields = apply_filters( 'woocommerce_shipping_fields', array() );
-		$fields = $woocommerce->countries->get_address_fields( $woocommerce->countries->get_base_country(), 'shipping_' );
 
 		if (isset($_POST['shipping_account_address_action']) && $_POST['shipping_account_address_action'] == 'save' ) {
 			unset($_POST['shipping_account_address_action']);
@@ -367,7 +360,7 @@ class WC_Multiple_addresses {
 			}
 
 			update_user_meta($user->ID, 'wc_multiple_shipping_addresses', $addresses);
-			$woocommerce->add_message(__( 'Addresses have been saved', 'wc_shipping_multiple_address' ) );
+			wc_add_notice(__( 'Addresses have been saved', 'wc_shipping_multiple_address' ), $notice_type = 'success' );
 			$page_id = woocommerce_get_page_id( 'myaccount' );
 			wp_redirect(get_permalink($page_id));
 			exit;
