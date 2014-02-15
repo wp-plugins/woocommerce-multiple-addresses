@@ -1,0 +1,7 @@
+/* This stylesheet is used to style the public view of the plugin. */
+
+#addresses > div {
+	border-bottom: 1px solid #777;
+	padding-bottom: 20px;
+	margin-bottom: 20px;
+}
