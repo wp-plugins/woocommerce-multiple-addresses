@@ -1,18 +1,18 @@
 === Woocommerce Multiple Addresses ===
 Contributors: n3wnormal, dix.alex
-Tags: woocommerce, shipping, multiple addresses
+Tags: woocommerce, shipping, multiple addresses, predefined addresses
 Requires at least: 3.0.1
-Tested up to: 3.8.1
-Stable tag: 1.0.3
+Tested up to: 3.9
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-The plugin allows customers have more than one shipping addresses. 
+The plugin allows customers have more than one shipping and/or billing addresses.
 
 == Description ==
-The plugin allows customers add more than one shipping address at checkout. Customers can switch between the addresses and/or setup a default one in My Account.
+The plugin allows customers add more than one shipping or billing address. Customers can switch between the addresses at checkout and setup a default one in My Account.
 
-The plugin is compatible up to WooCommerce 2.1.2.
+The plugin is compatible up to WooCommerce 2.1.7.
 
 We support the plugin.
 Also developers can create pull requests on our [BitBucket repo](https://bitbucket.org/n3wnormal-dev/woocommerce-multiple-addresses/).
@@ -26,9 +26,17 @@ Ensure you have WooCommerce plugin installed and activated.
 
 == Screenshots ==
 1. Manage multiple addresses page.
-2. Notice reminding the customer to choose the default address.
+2. Notice reminding the customer to edit addresses and 'predefined addresses' select boxes at checkout.
 
 == Changelog ==
+= 1.0.4 =
+* Added compatibility to WooCommerce 2.1.7 and WordPress 3.9
+* Added Multisite Network support
+* Added translation support
+* Added German translation (thanks to [markus.reich](http://wordpress.org/support/profile/markusreich)
+* Added 'predefined addresses' select box on checkout for both shipping and billing addresses (thanks to [markus.reich](http://wordpress.org/support/profile/markusreich))
+* Other fixes
+
 = 1.0.3 =
 * Added compatibility to WooCommerce 2.1.2 and WordPress 3.8.1
 
