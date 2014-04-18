@@ -6,7 +6,7 @@
  * @author    Alexander Tinyaev <alexander.tinyaev@n3wnormal.com>
  * @license   GPL-2.0+
  * @link      http://n3wnormal.com
- * @copyright 2013 N3wNormal
+ * @copyright 2014 N3wNormal
  */
 
 // If uninstall, not called from WordPress, then exit
