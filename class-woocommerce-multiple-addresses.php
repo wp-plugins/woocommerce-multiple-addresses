@@ -20,11 +20,11 @@ class WC_Multiple_addresses {
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   1.0.4
+	 * @since   1.0.5
 	 *
 	 * @var     string
 	 */
-	const VERSION = '1.0.4';
+	const VERSION = '1.0.5';
 
 	/**
 	 * Unique identifier for the plugin.

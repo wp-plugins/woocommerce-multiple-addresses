@@ -3,7 +3,7 @@ Contributors: n3wnormal, dix.alex
 Tags: woocommerce, shipping, multiple addresses, predefined addresses
 Requires at least: 3.0.1
 Tested up to: 3.9
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,10 @@ Ensure you have WooCommerce plugin installed and activated.
 2. Notice reminding the customer to edit addresses and 'predefined addresses' select boxes at checkout.
 
 == Changelog ==
+= 1.0.5 =
+* Fixed critical bug related to WordPress Network (MultiSite) support
+* Improved WooCommerce plugin dependency logic
+
 = 1.0.4 =
 * Added compatibility to WooCommerce 2.1.7 and WordPress 3.9
 * Added Multisite Network support
