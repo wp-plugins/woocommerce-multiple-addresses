@@ -6,13 +6,13 @@
  * @author    Alexander Tinyaev <alexander.tinyaev@n3wnormal.com>
  * @license   GPL-2.0+
  * @link      http://n3wnormal.com
- * @copyright 2014 N3wNormal
+ * @copyright 2015 N3wNormal
  *
  * @wordpress-plugin
  * Plugin Name: Woocommerce Multiple Addresses
  * Plugin URI:  http://n3wnormal.com
  * Description: The plugin allows customers have more than one shipping addresses. Customers can switch one to another on checkout or setup a default one in My Account.
- * Version:     1.0.5
+ * Version:     1.0.6
  * Author:      Alexander Tinyaev
  * Author URI:  http://n3wnormal.com
  * License:     GPL-2.0+
