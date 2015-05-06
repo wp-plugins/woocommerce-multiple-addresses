@@ -20,11 +20,11 @@ class WC_Multiple_addresses {
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   1.0.5
+	 * @since   1.0.6
 	 *
 	 * @var     string
 	 */
-	const VERSION = '1.0.5';
+	const VERSION = '1.0.6';
 
 	/**
 	 * Unique identifier for the plugin.
@@ -36,7 +36,7 @@ class WC_Multiple_addresses {
 	 *
 	 * @var      string
 	 */
-	protected $plugin_slug = 'woocommerce-multiple-addresses';
+	protected static $plugin_slug = 'woocommerce-multiple-addresses';
 
 	/**
 	 * Instance of this class.
@@ -76,7 +76,7 @@ class WC_Multiple_addresses {
 		// Show a 'configure addresses' button on checkout
 		add_action( 'woocommerce_before_checkout_form', array( $this, 'before_checkout_form' ) );
 
-		// Save shipping address as default when creating a new customer
+		// Save billing and shipping addresses as default when creating a new customer aco
 		add_action( 'woocommerce_created_customer', array( $this, 'created_customer_save_shipping_as_default' ) );
 
 		// Add a dropdown to choose an address
@@ -86,6 +86,8 @@ class WC_Multiple_addresses {
 		add_action( 'wp_ajax_alt_change', array( $this, 'ajax_checkout_change_shipping_address' ) );
 		add_action( 'wp_ajax_nopriv_alt_change', array( $this, 'ajax_checkout_change_shipping_address' ) );
 
+		// Filter shipping country value
+		add_filter( 'woocommerce_checkout_get_value', array( $this, 'wma_checkout_get_value' ), 10, 2 );
 	}
 
 	/**
@@ -228,8 +230,7 @@ class WC_Multiple_addresses {
 				'post_content'   => '[woocommerce_multiple_shipping_addresses]',
 				'post_name'      => 'multiple-shipping-addresses',
 				'post_parent'    => $account_id,
-				// TODO: add textdomain as plugin slug
-				'post_title'     => __( 'Manage Your Addresses', 'woocommerce-multiple-addresses' ),
+				'post_title'     => __( 'Manage Your Addresses', self::$plugin_slug ),
 				'post_type'      => 'page',
 				'post_status'    => 'publish',
 				'post_category'  => array( 1 )
@@ -257,7 +258,7 @@ class WC_Multiple_addresses {
 	 */
 	public function load_plugin_textdomain() {
 
-		$domain = $this->plugin_slug;
+		$domain = self::$plugin_slug;
 		$locale = apply_filters( 'plugin_locale', get_locale(), $domain );
 		load_textdomain( $domain, trailingslashit( WP_LANG_DIR ) . $domain . '/' . $domain . '-' . $locale . '.mo' );
 		load_plugin_textdomain( $domain, false, basename( plugin_dir_path( __FILE__ ) ) . '/languages/' );
@@ -287,17 +288,18 @@ class WC_Multiple_addresses {
 	 * @since    1.0.4
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style( $this->plugin_slug . '-plugin-styles', plugins_url( 'assets/css/public.css', __FILE__ ), array(), self::VERSION );
+		wp_enqueue_style( self::$plugin_slug . '-plugin-styles', plugins_url( 'assets/css/public.css', __FILE__ ), array(), self::VERSION );
 	}
 
 	/**
 	 * Register and enqueues public-facing JavaScript files.
 	 *
-	 * @since    1.0.4
+	 * @since    1.0.6
 	 */
 	public function enqueue_scripts() {
-		wp_enqueue_script( $this->plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
-		wp_localize_script( $this->plugin_slug . '-plugin-script', 'WCMA_Ajax', array(
+		wp_enqueue_script( 'wc-country-select', WP_CONTENT_URL . '/plugins/woocommerce/assets/js/frontend/country-select.min.js', array( 'jquery' ), self::VERSION, true );
+		wp_enqueue_script( self::$plugin_slug . '-plugin-script', plugins_url( 'assets/js/public.js', __FILE__ ), array( 'jquery' ), self::VERSION );
+		wp_localize_script( self::$plugin_slug . '-plugin-script', 'WCMA_Ajax', array(
 				'ajaxurl'               => admin_url( 'admin-ajax.php' ),
 				'id'                    => 0,
 				'wc_multiple_addresses' => wp_create_nonce( 'wc-multiple-addresses-ajax-nonce' )
@@ -309,27 +311,52 @@ class WC_Multiple_addresses {
 	/**
 	 * Point edit address button on my account to edit multiple shipping addresses
 	 *
-	 * @since    1.0.2
+	 * @since    1.0.6
 	 */
 	public function rewrite_edit_url_on_my_account() {
-		$page_id  = woocommerce_get_page_id( 'multiple_shipping_addresses' );
-		$site_url = home_url( '/' );
+		$page_id  = wc_get_page_id( 'multiple_shipping_addresses' );
+		$page_url = get_permalink( $page_id );
 		?>
 		<script type="text/javascript">
-			jQuery(document).ready(function () {
-				jQuery('.woocommerce .col2-set.addresses .col-2 .title a').attr('href', '<?php echo $site_url . "?page_id=" . $page_id; ?>');
+			jQuery(document).ready(function ($) {
+				$('.woocommerce-account .col-2.address .title a').attr('href', '<?php echo $page_url; ?>');
 			});
 		</script>
 	<?php
 	}
 
+
+	/**
+	 * Filter shipping country value
+	 *
+	 * @param $null
+	 * @param $input
+	 *
+	 * @since    1.0.6
+	 *
+	 * @return mixed
+	 */
+	public function wma_checkout_get_value($null, $input) {
+		global $wma_current_address;
+
+		if ( ! empty( $wma_current_address ) ) {
+			foreach ($wma_current_address as $key => $value) {
+				if ( $input == $key ) {
+					return $value;
+				}
+			}
+		}
+	}
+
 	/**
 	 * Multiple shipping addresses page
 	 *
-	 * @since    1.0.4
+	 * @since    1.0.6
 	 */
 	public function multiple_shipping_addresses() {
 		global $woocommerce;
+
+		$GLOBALS['wma_current_address'] = '';
 
 		if ( version_compare( WOOCOMMERCE_VERSION, '2.1', '<' ) ) {
 			require_once $woocommerce->plugin_path() .'/classes/class-wc-checkout.php';
@@ -337,11 +364,9 @@ class WC_Multiple_addresses {
 			require_once $woocommerce->plugin_path() . '/includes/class-wc-checkout.php';
 		}
 
-		$checkout = new WC_Order();
 		$user     = wp_get_current_user();
-
-		$shipFields                           = $woocommerce->countries->get_address_fields( $woocommerce->countries->get_base_country(), 'shipping_' );
-		$shipFields['shipping_city']['label'] = $shipFields['shipping_city']['placeholder'] = "City";
+		$checkout = WC()->checkout();
+		$shipFields = $checkout->checkout_fields['shipping'];
 
 		if ( $user->ID == 0 ) {
 			return;
@@ -353,24 +378,34 @@ class WC_Multiple_addresses {
 		if ( ! empty( $otherAddr ) ) {
 			echo '<div id="addresses">';
 
+			global $wma_current_address;
 			foreach ( $otherAddr as $idx => $address ) {
+				$wma_current_address = $address;
 				echo '<div class="shipping_address address_block" id="shipping_address_' . $idx . '">';
-				echo '<p align="right"><a href="#" class="delete">' . __( 'delete', $this->plugin_slug ) . '</a></p>';
+				echo '<p align="right"><a href="#" class="delete">' . __( 'delete', self::$plugin_slug ) . '</a></p>';
 				do_action( 'woocommerce_before_checkout_shipping_form', $checkout );
 
 				foreach ( $shipFields as $key => $field ) {
-					$val = '';
 
+					if ( 'shipping_alt' == $key ) {
+						continue;
+					}
+
+					$val = '';
 					if ( isset( $address[ $key ] ) ) {
 						$val = $address[ $key ];
 					}
+
+					$field['id'] = $key;
 					$key .= '[]';
 					woocommerce_form_field( $key, $field, $val );
 				}
 
-				$is_checked = $address['shipping_address_is_default'] == 'true' ? "checked" : "";
-				echo '<input type="checkbox" class="default_shipping_address" ' . $is_checked . ' value="' . $address['shipping_address_is_default'] . '"> ' . __( 'Mark this shipping address as default', $this->plugin_slug );
-				echo '<input type="hidden" class="hidden_default_shipping_address" name="shipping_address_is_default[]" value="' . $address['shipping_address_is_default'] . '" />';
+				if ( ! wc_ship_to_billing_address_only() && get_option( 'woocommerce_calc_shipping' ) !== 'no' ) {
+					$is_checked = $address['shipping_address_is_default'] == 'true' ? "checked" : "";
+					echo '<input type="checkbox" class="default_shipping_address" ' . $is_checked . ' value="' . $address['shipping_address_is_default'] . '"> ' . __( 'Mark this shipping address as default', self::$plugin_slug );
+					echo '<input type="hidden" class="hidden_default_shipping_address" name="shipping_address_is_default[]" value="' . $address['shipping_address_is_default'] . '" />';
+				}
 
 				do_action( 'woocommerce_after_checkout_shipping_form', $checkout );
 				echo '</div>';
@@ -378,52 +413,49 @@ class WC_Multiple_addresses {
 			echo '</div>';
 		} else {
 
-			$shipping_address = array(
-				'shipping_first_name' => get_user_meta( $user->ID, 'shipping_first_name', true ),
-				'shipping_last_name'  => get_user_meta( $user->ID, 'shipping_last_name', true ),
-				'shipping_company'    => get_user_meta( $user->ID, 'shipping_company', true ),
-				'shipping_address_1'  => get_user_meta( $user->ID, 'shipping_address_1', true ),
-				'shipping_address_2'  => get_user_meta( $user->ID, 'shipping_address_2', true ),
-				'shipping_city'       => get_user_meta( $user->ID, 'shipping_city', true ),
-				'shipping_state'      => get_user_meta( $user->ID, 'shipping_state', true ),
-				'shipping_postcode'   => get_user_meta( $user->ID, 'shipping_postcode', true ),
-				'shipping_country'    => get_user_meta( $user->ID, 'shipping_country', true )
-			);
-
 			echo '<div id="addresses">';
-			foreach ( $shipFields as $key => $field ) :
-				$val = $shipping_address[ $key ];
-				$key .= '[]';
 
-				woocommerce_form_field( $key, $field, $val );
+			foreach ( $shipFields as $key => $field ) :
+				$field['id'] = $key;
+				$key .= '[]';
+				woocommerce_form_field( $key, $field, $checkout->get_value( $field['id'] ) );
 			endforeach;
 
-			echo '<input type="checkbox" class="default_shipping_address" checked value="true"> ' . __( 'Mark this shipping address as default', $this->plugin_slug );
-			echo '<input type="hidden" class="hidden_default_shipping_address" name="shipping_address_is_default[]" value="true" />';
+			if ( ! wc_ship_to_billing_address_only() && get_option( 'woocommerce_calc_shipping' ) !== 'no' ) {
+				echo '<input type="checkbox" class="default_shipping_address" checked value="true"> ' . __( 'Mark this shipping address as default', self::$plugin_slug );
+				echo '<input type="hidden" class="hidden_default_shipping_address" name="shipping_address_is_default[]" value="true" />';
+			}
 
 			echo '</div>';
 		}
 		echo '<div class="form-row">
                 <input type="hidden" name="shipping_account_address_action" value="save" />
-                <input type="submit" name="set_addresses" value="' . __( 'Save Addresses', $this->plugin_slug ) . '" class="button alt" />
-                <a class="add_address" href="#">' . __( 'Add another', $this->plugin_slug ) . '</a>
+                <input type="submit" name="set_addresses" value="' . __( 'Save Addresses', self::$plugin_slug ) . '" class="button alt" />
+                <a class="add_address" href="#">' . __( 'Add another', self::$plugin_slug ) . '</a>
             </div>';
 		echo '</form>';
 		echo '</div>';
 		?>
 		<script type="text/javascript">
-			var tmpl = '<div class="shipping_address address_block"><p align="right"><a href="#" class="delete">Löschen</a></p>';
+			var tmpl = '<div class="shipping_address address_block"><p align="right"><a href="#" class="delete"><?php _e( "delete", self::$plugin_slug ); ?></a></p>';
 
 			tmpl += '<?php foreach ($shipFields as $key => $field) :
-				$key .= '[]';
-				$val = '';
+				if ( 'shipping_alt' == $key ) {
+					continue;
+				}
 				$field['return'] = true;
+				$val = '';
+				$field['id'] = $key;
+				$key .= '[]';
 				$row = woocommerce_form_field( $key, $field, $val );
 				echo str_replace("\n", "\\\n", str_replace("'", "\'", $row));
 			endforeach; ?>';
 
-			tmpl += '<input type="checkbox" class="default_shipping_address" value="false"> <?php _e( "Mark this shipping address as default", $this->plugin_slug ); ?>';
-			tmpl += '<input type="hidden" class="hidden_default_shipping_address" name="shipping_address_is_default[]" value="false" />';
+			<?php if ( ! wc_ship_to_billing_address_only() && get_option( 'woocommerce_calc_shipping' ) !== 'no' ) : ?>
+				tmpl += '<input type="checkbox" class="default_shipping_address" value="false"> <?php _e( "Mark this shipping address as default", self::$plugin_slug ); ?>';
+				tmpl += '<input type="hidden" class="hidden_default_shipping_address" name="shipping_address_is_default[]" value="false" />';
+			<?php endif; ?>
+
 			tmpl += '</div>';
 			jQuery(".add_address").click(function (e) {
 				e.preventDefault();
@@ -517,9 +549,9 @@ class WC_Multiple_addresses {
 
 			if ( version_compare( WOOCOMMERCE_VERSION, '2.1', '<' ) ) {
 				global $woocommerce;
-				$woocommerce->add_message( __( 'Addresses have been saved', $this->plugin_slug ) );
+				$woocommerce->add_message( __( 'Addresses have been saved', self::$plugin_slug ) );
 			} else {
-				wc_add_notice( __( 'Addresses have been saved', $this->plugin_slug ), $notice_type = 'success' );
+				wc_add_notice( __( 'Addresses have been saved', self::$plugin_slug ), $notice_type = 'success' );
 			}
 
 			$page_id = woocommerce_get_page_id( 'myaccount' );
@@ -539,8 +571,8 @@ class WC_Multiple_addresses {
 		$page_id = woocommerce_get_page_id( 'multiple_shipping_addresses' );
 		if ( is_user_logged_in() ) {
 			echo '<p class="woocommerce-info woocommerce_message">
-	                ' . __( 'If you have more than one shipping address, then you may choose a default one here.', $this->plugin_slug ) . '
-	                <a class="button" href="' . get_permalink( $page_id ) . '">' . __( 'Configure Address', $this->plugin_slug ) . '</a>
+	                ' . __( 'If you have more than one shipping address, then you may choose a default one here.', self::$plugin_slug ) . '
+	                <a class="button" href="' . get_permalink( $page_id ) . '">' . __( 'Configure Address', self::$plugin_slug ) . '</a>
 	              </p>';
 		}
 	}
@@ -621,13 +653,13 @@ class WC_Multiple_addresses {
 		}
 
 		$addresses    = array();
-		$addresses[0] = __( 'Choose an address...', $this->plugin_slug );
+		$addresses[0] = __( 'Choose an address...', self::$plugin_slug );
 		for ( $i = 1; $i <= count( $otherAddrs ); ++$i ) {
 			$addresses[ $i ] = $otherAddrs[ $i - 1 ]['shipping_first_name'] . ' ' . $otherAddrs[ $i - 1 ]['shipping_last_name'] . ', ' . $otherAddrs[ $i - 1 ]['shipping_postcode'] . ' ' . $otherAddrs[ $i - 1 ]['shipping_city'];
 		}
 
 		$alt_field = array(
-			'label'    => __( 'Predefined addresses', $this->plugin_slug ),
+			'label'    => __( 'Predefined addresses', self::$plugin_slug ),
 			'required' => false,
 			'class'    => array( 'form-row' ),
 			'clear'    => true,
