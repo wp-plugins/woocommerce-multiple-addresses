@@ -42,7 +42,6 @@ Ensure you have WooCommerce plugin installed and activated.
 * Fix German translations
 * Update compatibility with WordPress 4.2.X and WooCommerce 2.3.X
 
-== Changelog ==
 = 1.0.5 =
 * Fixed critical bug related to WordPress Network (MultiSite) support
 * Improved WooCommerce plugin dependency logic
