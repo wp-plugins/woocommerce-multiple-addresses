@@ -24,7 +24,7 @@
 					$('#shipping_postcode').val(response.shipping_postcode);
 					$('#shipping_state').val(response.shipping_state);
 					var stateName = $('#shipping_state option[value="'+response.shipping_state+'"]').text();
-					$("#shipping_state_chosen").find('span').html(stateName).parent().removeClass('chosen-default');
+                    $("#s2id_shipping_state").find('.select2-chosen').html(stateName).parent().removeClass('select2-default');
 				}
 			);
 			return false;
@@ -48,7 +48,7 @@
 					$('#billing_postcode').val(response.shipping_postcode);
 					$('#billing_state').val(response.shipping_state);
 					var stateName = $('#billing_state option[value="'+response.shipping_state+'"]').text();
-					$("#billing_state_chosen").find('span').html(stateName).parent().removeClass('chosen-default');
+					$("#s2id_billing_state").find('.select2-chosen').html(stateName).parent().removeClass('select2-default');
 				}
 			);
 			return false;

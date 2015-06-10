@@ -20,11 +20,11 @@ class WC_Multiple_addresses {
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   1.0.6
+	 * @since   1.0.7
 	 *
 	 * @var     string
 	 */
-	const VERSION = '1.0.6';
+	const VERSION = '1.0.7';
 
 	/**
 	 * Unique identifier for the plugin.
@@ -351,7 +351,7 @@ class WC_Multiple_addresses {
 	/**
 	 * Multiple shipping addresses page
 	 *
-	 * @since    1.0.6
+	 * @since    1.0.7
 	 */
 	public function multiple_shipping_addresses() {
 		global $woocommerce;
@@ -384,6 +384,10 @@ class WC_Multiple_addresses {
 				echo '<div class="shipping_address address_block" id="shipping_address_' . $idx . '">';
 				echo '<p align="right"><a href="#" class="delete">' . __( 'delete', self::$plugin_slug ) . '</a></p>';
 				do_action( 'woocommerce_before_checkout_shipping_form', $checkout );
+
+                $label['id'] = 'label';
+                $label['label'] = __( 'Label', self::$plugin_slug );
+                woocommerce_form_field( 'label[]', $label, $address['label'] );
 
 				foreach ( $shipFields as $key => $field ) {
 
@@ -640,7 +644,7 @@ class WC_Multiple_addresses {
 	 *
 	 * @param    $fields
 	 *
-	 * @since    1.0.4
+	 * @since    1.0.7
 	 *
 	 * @return   mixed
 	 */
@@ -655,7 +659,11 @@ class WC_Multiple_addresses {
 		$addresses    = array();
 		$addresses[0] = __( 'Choose an address...', self::$plugin_slug );
 		for ( $i = 1; $i <= count( $otherAddrs ); ++$i ) {
-			$addresses[ $i ] = $otherAddrs[ $i - 1 ]['shipping_first_name'] . ' ' . $otherAddrs[ $i - 1 ]['shipping_last_name'] . ', ' . $otherAddrs[ $i - 1 ]['shipping_postcode'] . ' ' . $otherAddrs[ $i - 1 ]['shipping_city'];
+            if (!empty($otherAddrs[$i - 1]['label'])) {
+                $addresses[ $i ] = $otherAddrs[$i - 1]['label'] . ' ' . $otherAddrs[ $i - 1 ]['shipping_postcode'];
+            } else {
+                $addresses[ $i ] = $otherAddrs[ $i - 1 ]['shipping_first_name'] . ' ' . $otherAddrs[ $i - 1 ]['shipping_last_name'] . ', ' . $otherAddrs[ $i - 1 ]['shipping_postcode'] . ' ' . $otherAddrs[ $i - 1 ]['shipping_city'];
+            }
 		}
 
 		$alt_field = array(
