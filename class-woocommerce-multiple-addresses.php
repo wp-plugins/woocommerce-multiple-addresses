@@ -382,7 +382,8 @@ class WC_Multiple_addresses {
 			foreach ( $otherAddr as $idx => $address ) {
 				$wma_current_address = $address;
 				echo '<div class="shipping_address address_block" id="shipping_address_' . $idx . '">';
-				echo '<p align="right"><a href="#" class="delete">' . __( 'delete', self::$plugin_slug ) . '</a></p>';
+				echo '<p style="float:left;"><a href="#" onclick="jQuery(\'#address_content_'.$idx.'\').toggle();return false;">Edit Detail</a></p>';
+				echo '<p style="float:right;"><a href="#" class="delete">' . __( 'delete', self::$plugin_slug ) . '</a></p><br style="clear:both" />';
 				do_action( 'woocommerce_before_checkout_shipping_form', $checkout );
 
                 $label['id'] = 'label';
@@ -393,6 +394,10 @@ class WC_Multiple_addresses {
 
 					if ( 'shipping_alt' == $key ) {
 						continue;
+					}
+					if( 'shipping_country' == $key ) { 
+						echo '<div id="address_content_'.$idx.'" style="display:none;">';
+		
 					}
 
 					$val = '';
@@ -412,6 +417,7 @@ class WC_Multiple_addresses {
 				}
 
 				do_action( 'woocommerce_after_checkout_shipping_form', $checkout );
+				echo '</div>';
 				echo '</div>';
 			}
 			echo '</div>';
