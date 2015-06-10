@@ -6,7 +6,7 @@
  * @author    Alexander Tinyaev <alexander.tinyaev@n3wnormal.com>
  * @license   GPL-2.0+
  * @link      http://n3wnormal.com
- * @copyright 2014 N3wNormal
+ * @copyright 2015 N3wNormal
  */
 
 /**
@@ -20,11 +20,11 @@ class WC_Multiple_addresses {
 	/**
 	 * Plugin version, used for cache-busting of style and script file references.
 	 *
-	 * @since   1.0.7
+	 * @since   1.0.7.1
 	 *
 	 * @var     string
 	 */
-	const VERSION = '1.0.7';
+	const VERSION = '1.0.7.1';
 
 	/**
 	 * Unique identifier for the plugin.
@@ -351,7 +351,7 @@ class WC_Multiple_addresses {
 	/**
 	 * Multiple shipping addresses page
 	 *
-	 * @since    1.0.7
+	 * @since    1.0.7.1
 	 */
 	public function multiple_shipping_addresses() {
 		global $woocommerce;
@@ -442,6 +442,12 @@ class WC_Multiple_addresses {
 		?>
 		<script type="text/javascript">
 			var tmpl = '<div class="shipping_address address_block"><p align="right"><a href="#" class="delete"><?php _e( "delete", self::$plugin_slug ); ?></a></p>';
+
+            tmpl += '<?php $label['id'] = 'label';
+                $label['label'] = __( 'Label', self::$plugin_slug );
+                $row = woocommerce_form_field( 'label[]', $label, '' );
+                echo str_replace("\n", "\\\n", str_replace("'", "\'", $row));
+                ?>';
 
 			tmpl += '<?php foreach ($shipFields as $key => $field) :
 				if ( 'shipping_alt' == $key ) {

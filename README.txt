@@ -3,7 +3,7 @@ Contributors: n3wnormal, dix.alex, ya.kuzmenko
 Tags: woocommerce, shipping, multiple addresses, predefined addresses
 Requires at least: 3.0.1
 Tested up to: 4.2.2
-Stable tag: 1.0.7
+Stable tag: 1.0.7.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,6 +29,10 @@ Ensure you have WooCommerce plugin installed and activated.
 2. Notice reminding the customer to edit addresses and 'predefined addresses' select boxes at checkout.
 
 == Changelog ==
+= 1.0.7.1 =
+* Fix for not adding label to new addresses
+* Added French translation (thanks to [denizgezgin](http://wordpress.org/support/profile/denizgezgin))
+
 = 1.0.7 =
 * Added labels for addresses (now it shows label and zipcode in 'predefined addresses')
 * Fixed not populating state field
