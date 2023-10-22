@@ -397,6 +397,9 @@ class WC_Multiple_addresses {
 
 					$val = '';
 					if ( isset( $address[ $key ] ) ) {
+						if($key=='shipping_state' && isset($field['country'])){
+								$field['country']=$address['shipping_country'];
+						}
 						$val = $address[ $key ];
 					}
 
